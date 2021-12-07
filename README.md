@@ -1,5 +1,7 @@
-# GalbiBot
+# **GalbiBot**
 Un bot leggero basato su py-cord facile da hostare sul cloud
+
+![help](https://i.imgur.com/0NSq11M.png)  ![info](https://i.imgur.com/l8ss3iI.png)
 
 # Guida installazione su una macchina
 
@@ -17,3 +19,7 @@ Installa i requisiti:
 Avvia il bot
 
 `py main.py` o `python3 main.py`
+
+# Deploy su heroku
+
+**In arrivo..**
