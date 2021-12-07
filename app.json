@@ -1,0 +1,20 @@
+{
+    "name": "GalbiBot",
+    "description": "Un bot leggero basato su py-cord facile da hostare sul cloud",
+    "scripts": {},
+    "env": {
+      "TOKEN": ""
+    },
+    "formation": {
+      "worker": {
+        "quantity": 1
+      }
+    },
+    "addons": [],
+    "buildpacks": [
+      {
+        "url": "heroku/python"
+      }
+    ],
+    "stack": "heroku-20"
+  }
