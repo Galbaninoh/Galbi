@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 #.env
 load_dotenv()
 token = os.environ['TOKEN']
+clientid = os.environ['CLIENT_ID']
 #client
 client = commands.Bot(command_prefix=" ", case_insensitive=True)
 client.remove_command("help")
@@ -77,7 +78,7 @@ async def youtube(ctx):
 
 @client.slash_command(description="Invita questo fantastico bot al tuo discord!")
 async def invite(ctx):
-    tasto=Button(label="INVITA IL BOT!", style=discord.ButtonStyle.url, emoji="🎫",url="https://discord.com/oauth2/authorize?client_id=856409675129815050&permissions=8&scope=applications.commands%20bot")
+    tasto=Button(label="INVITA IL BOT!", style=discord.ButtonStyle.url, emoji="🎫",url=f"https://discord.com/oauth2/authorize?client_id={clientid}&permissions=8&scope=applications.commands%20bot")
     view= View()
     view.add_item(tasto)
     await ctx.respond('**Ecco qua il tasto per invitare il bot!**',view=view)
