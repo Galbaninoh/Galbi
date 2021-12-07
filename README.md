@@ -18,6 +18,6 @@ Avvia il bot
 
 `py main.py` o `python3 main.py`
 
-#Deploy su heroku
+# Deploy su heroku
 
 **In arrivo..**
