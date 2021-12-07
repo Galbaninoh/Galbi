@@ -17,3 +17,7 @@ Installa i requisiti:
 Avvia il bot
 
 `py main.py` o `python3 main.py`
+
+#Deploy su heroku
+
+**In arrivo..**
