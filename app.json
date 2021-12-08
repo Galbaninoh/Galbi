@@ -10,7 +10,7 @@
   },
   "formation": {
     "worker": {
-      "quantity": 1
+      "quantity": 5
     }
   },
   "addons": [],
