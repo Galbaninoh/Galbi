@@ -3,8 +3,8 @@
   "description": "Un bot leggero basato su py-cord facile da hostare sul cloud",
   "scripts": {},
   "env": {
-    "TOKEN": "",
-    "CLIENT_ID": ""
+    "CLIENT_ID": "",
+    "TOKEN": ""
   },
   "formation": {
     "worker": {
@@ -15,6 +15,9 @@
   "buildpacks": [
     {
       "url": "heroku/python"
+    },
+    {
+      "url": "https://github.com/Pycord-Development/pycord.git"
     }
   ],
   "stack": "heroku-20"
