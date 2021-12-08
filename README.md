@@ -22,4 +22,13 @@ Avvia il bot
 
 # Deploy su heroku
 
-**In arrivo..**
+### ATTENZIONE **Prima di prosegure è necessario avere un account heroku se non lo hai crealo [qui](https://signup.heroku.com/login)**
+
+[![](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/Galbaninoh/GalbiBot)
+
+# Generare il link d'invito
+
+Per generare il link d'invito basta che sostituisci CLIENT_ID nel link qua sotto con il client id del tuo bot.
+
+https://discord.com/oauth2/authorize?client_id=CLIENT_ID&permissions=8&scope=applications.commands%20bot
+
