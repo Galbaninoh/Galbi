@@ -192,7 +192,7 @@ async def on_error(ctx, error):
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name=f"GalbiBot | Test"))
+    await client.change_presence(activity=discord.Game(name=f"{client.user.name} | V2.0 | /invite"))
     print('GalbiBot by Galbaninoh')
     print('------------')
     print('Bot pronto come')
