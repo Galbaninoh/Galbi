@@ -14,9 +14,6 @@
   "addons": [],
   "buildpacks": [
     {
-      "url": "heroku/python"
-    },
-    {
       "url": "https://github.com/Pycord-Development/pycord.git"
     }
   ],
