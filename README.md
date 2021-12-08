@@ -5,9 +5,10 @@ Un bot leggero basato su py-cord facile da hostare sul cloud
 
 # Guida installazione su una macchina
 
-**Per far funzionare il bot devi aver installato python**
+**Per far funzionare il bot devi aver installato python e Git**
 
 Scarica python [qui](https://www.python.org/downloads/).
+Scarica Git [qui](https://git-scm.com/downloads)
 
 Installa i requisiti:
 
