@@ -1,7 +1,9 @@
 {
   "name": "GalbiBot",
   "description": "Un bot leggero basato su py-cord facile da hostare sul cloud",
-  "scripts": {},
+  "scripts": {
+    "postdeploy": "pip install git+https://github.com/Pycord-Development/pycord"
+  },
   "env": {
     "CLIENT_ID": "",
     "TOKEN": ""
