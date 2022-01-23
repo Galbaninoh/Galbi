@@ -15,7 +15,7 @@ Installa i requisiti:
 `pip install -r requirements.txt`
 
 #### Inserisci il token e il client id del tuo bot nel `.env` (Ottieni il token e il client id [qui](https://discord.com/developers/applications))
-`TOKEN =metti il tuo token qui` `CLIENT_ID =metti il tuo client id qui`
+`TOKEN =metti il tuo token qui` `CLIENT_ID =metti il tuo Application id qui`
 
 Avvia il bot
 
