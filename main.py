@@ -15,6 +15,7 @@ from discord.ui.button import button
 import discord_together
 from discord_together import DiscordTogether
 from dotenv import load_dotenv
+import pyshorteners
 
 
 #.env
@@ -176,19 +177,26 @@ async def eightball(ctx, *,domanda):
                 "Molto dubbioso."]
     await ctx.respond(f':8ball: Domanda: {domanda}\n:8ball: Risposta: {random.choice(responses)}')
 
-#On command error
+#Url shortner
 
-@client.event
-async def on_error(ctx, error):
-    if isinstance(error, BadArgument):
-        embed=discord.Embed(title="**Errore!**", description="**Non hai il permesso di eseguire questo comando!** 🛑", color=0xf00000)
-        await ctx.send(embed=embed)
-    elif isinstance(error, MissingPermissions):
-        embed=discord.Embed(title="**Errore!**", description="**La sintassi non è corretta!** 🛑", color=0xf00000)
-        await ctx.send(embed=embed)
+@client.slash_command(description="Accorcia un url con pochi clic")
+async def shortner(ctx, link):
+    if link.startswith('http://'):
+        shortner=pyshorteners.Shortener()
+        short= shortner.tinyurl.short(link)
+        embed=discord.Embed(title="**Url Accorciato!**")
+        embed.add_field(name="Url Originale", value=link, inline=False)
+        embed.add_field(name="Url Accorciato", value=short, inline=False)
+        await ctx.respond(embed=embed)
+    elif link.startswith('https://'):
+        shortner=pyshorteners.Shortener()
+        short= shortner.tinyurl.short(link)
+        embed=discord.Embed(title="**Url Accorciato!**")
+        embed.add_field(name="Url Originale", value=link, inline=False)
+        embed.add_field(name="Url Accorciato", value=short, inline=False)
+        await ctx.respond(embed=embed)
     else:
-        raise error
-
+        await ctx.respond(":red_square: **Link non valido!** Ricordati di inserire `http://` o `https://`")
 
 @client.event
 async def on_ready():

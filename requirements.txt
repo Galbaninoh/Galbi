@@ -3,3 +3,4 @@ aiohttp
 git+https://github.com/Pycord-Development/pycord
 asyncio
 discord_together
+pyshorteners
