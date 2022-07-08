@@ -1,4 +1,4 @@
-[logo](https://i.imgur.com/YeL6Nq0.png)
+![logo](https://i.imgur.com/YeL6Nq0.png)
 # **Galbi**
 Un bot semplice facile da hostare sul cloud
 
