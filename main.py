@@ -1,91 +1,131 @@
 #import
-from logging import log
-from typing import AsyncContextManager
 import random
 import discord
-from discord import client
+from discord import Guild, client
 from discord.ext.commands.errors import BadArgument, MissingPermissions
 from discord.ui import Button, View, view
 from discord.ext import commands, tasks
 import asyncio
 import aiohttp
 import os
+import requests
 from discord.ext.commands import Bot
 from discord.ui.button import button
-import discord_together
 from discord_together import DiscordTogether
 from dotenv import load_dotenv
+import art
 import pyshorteners
 
 
-#.env
-load_dotenv()
-token = os.environ['TOKEN']
-clientid = os.environ['CLIENT_ID']
+
+
 #client
 client = commands.Bot(command_prefix=" ", case_insensitive=True)
 client.remove_command("help")
 
-###Info
+@client.event
+async def on_ready():
+    print("Caricato configurazione da .env")
+    if status == "dnd":
+        await client.change_presence(activity=discord.Game(name=f"{client.user.name} | 1.0 | /invite"), status=discord.Status.dnd)
+    elif status == "online":
+        await client.change_presence(activity=discord.Game(name=f"{client.user.name} | 1.0 | /invite"))
+    elif status == "offline":
+        await client.change_presence(activity=discord.Game(name=f"{client.user.name} | 1.0 | /invite"), status=discord.Status.invisible)
+    elif status == "inattivo":
+        await client.change_presence(activity=discord.Game(name=f"{client.user.name} | 1.0 | /invite"), status=discord.Status.idle)
+    elif status == "streaming":
+        await client.change_presence(activity=discord.Streaming(name=f"{client.user.name} | 1.0 | /invite",url="https://twitch.tv/Ninja"))
+    else:
+        await client.change_presence(activity=discord.Game(name=f"{client.user.name} | 1.0 | /invite"))
+    client.togetherControl = await DiscordTogether(token)
+    art.tprint("Galbi")
+    print("Online come: " + client.user.name)
+    
 
-@client.slash_command(description="Vedi diverse informazioni sul bot!")
+load_dotenv()
+token = os.environ['TOKEN']
+clientid = os.environ['CLIENT_ID']
+emcolor_r = int(os.environ['EMBED_COLOR_R'])
+emcolor_g = int(os.environ['EMBED_COLOR_G'])
+emcolor_b = int(os.environ['EMBED_COLOR_B'])
+status= os.environ['STATUS']
+caninvite= os.environ['INVITE']
+
+
+#Info
+
+@client.slash_command(description="Ottieni informazioni su questo bot")
 async def info(ctx):
-    embed=discord.Embed(title="**Informazioni sul Bot**", color=ctx.author.color)
-    embed.set_author(name="Galbi Bot V2.0 By Galbaninoh", url="https://github.com/Galbaninoh/GalbiBot", icon_url="https://cdn.discordapp.com/avatars/532264302300889088/2de1cf0d3e414f574cd78ba92e8884d7.webp?size=24")
-    embed.add_field(name="Versione", value="2.0", inline=False)
-    embed.add_field(name="Autore", value="Galbaninoh", inline=True)
-    embed.add_field(name="Prefix", value=f"`/`", inline=False)
-    latenza=client.latency*1000
-    embed.add_field(name="Ping", value=f"`{latenza}ms`", inline=True)
-    tasto=Button(label="Github", style=discord.ButtonStyle.url, emoji="💻",url="https://github.com/Galbaninoh/GalbiBot")
+    embed=discord.Embed(title="**Info**", description="Informazioni su questo bot", color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+    embed.set_author(name="Galbi", icon_url="https://i.imgur.com/YeL6Nq0.png")
+    embed.set_thumbnail(url="https://i.imgur.com/YeL6Nq0.png")
+    embed.add_field(name="**Sviluppatore**", value="`Galbaninoh#3543`", inline=False)
+    embed.add_field(name="**Versione**", value="`1.0`", inline=True)
+    embed.add_field(name="**Prefisso**", value="`/`", inline=True)
+    embed.add_field(name="Ping", value=f"`{client.latency*1000}`", inline=True)
+    embed.set_footer(text="Fatto con ❤️ da Galbaninoh#3543")
+    website=Button(label="Sito", style=discord.ButtonStyle.url, emoji="🌐",url="https://bot.galbaninoh.tech")
     view= View()
-    view.add_item(tasto)
-    await ctx.respond(embed=embed, view=view)
+    view.add_item(website)
+    await ctx.respond(f"{ctx.author.mention}",embed=embed, view=view)
 
 
-###Help
+#Help
 
 @client.slash_command(description="Guarda tutti i comandi del Bot!")
 async def help(ctx):
-    embed=discord.Embed(title="**Help**", color=0xff0040)
-    embed.add_field(name="`/Help <Comando>`", value="Da informazioni su un comando", inline=False)
-    embed.add_field(name="`/ban <membro> <motivo>`", value="Banna un membro dal server", inline=False)
-    embed.add_field(name="`/unban <membro> <motivo>`", value="Sbanna un membro dal server", inline=False)
-    embed.add_field(name="`/clear <NumeroDiMessaggi>`", value="Elimina un numero specificato di messaggi", inline=False)
-    embed.add_field(name="`/youtube`", value="Avvia una sessione di Youtube Watch Together", inline=False)
-    embed.add_field(name="`/meme`", value="Invia un meme", inline=False)
-    embed.add_field(name="`/say`", value="Fai dire una frase a tua scelta al bot", inline=False)
-    embed.add_field(name="`/eightball`", value="Fai una domanda e il bot darà la risposta", inline=False)
-    embed.add_field(name="`/invite`", value="Invia il link per invitare il bot al tuo discord", inline=False)
-    embed.add_field(name="`/info`", value="Ricevi diverse informazioni riguardanti al bot", inline=False)
-    await ctx.respond(embed=embed)
+    embed=discord.Embed(title="Comandi",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+    embed.set_author(name="Galbi", icon_url="https://i.imgur.com/YeL6Nq0.png")
+    embed.add_field(name="/info", value="Ottieni informazioni su questo bot", inline=False)
+    embed.add_field(name="/help", value="Guarda tutti i comandi del Bot", inline=False)
+    embed.add_field(name="/youtube", value="Avvia una sessione di Youtube Watch Together", inline=False)
+    embed.add_field(name="/invite", value="Invita questo bot al tuo discord!", inline=False)
+    embed.add_field(name="/ban", value="Banna un membro dal server", inline=False)
+    embed.add_field(name="/unban", value="Sbanna un membro dal server", inline=False)
+    embed.add_field(name="/clear", value="Elimina un numero specificato di messaggi", inline=False)
+    embed.add_field(name="/meme", value="Manda un Meme", inline=False)
+    embed.add_field(name="/eightball", value="Fai una domanda e il bot ti dara una risposta", inline=False)
+    embed.add_field(name="/shortner", value="Accorcia un url con pochi clic", inline=False)
+    embed.add_field(name="/gay", value="Gay Overlay", inline=False)
+    embed.add_field(name="/triggered", value="Triggered Overlay", inline=False)
+    embed.add_field(name="/comunism", value="Comunism Overlay", inline=False)
+    embed.add_field(name="/passed", value="Mission Passed Overlay", inline=False)
+    embed.add_field(name="/wasted", value="Wasted Overlay", inline=False)
+    await ctx.respond(f"{ctx.author.mention}",embed=embed)
 
 
-##comandi
+#comandi
 
 #Youtube Watch Together
-@client.slash_command(description="Avvia una sessione di youtube, preparati dei 🍿 e goditi la serata!")
+@client.slash_command(description="Avvia una sessione di youtube")
 async def youtube(ctx):
     voice_state = ctx.author.voice
     if voice_state is None:
-        return await ctx.respond('Devi essere in un canale vocale per eseguire questo comando')
-    sessione = await client.togetherControl.create_link(ctx.author.voice.channel.id, 'youtube')
-    tasto=Button(label="Entra nella sessione", style=discord.ButtonStyle.url, emoji="▶",url=sessione)
-    view= View()
-    view.add_item(tasto)
-    await ctx.respond('**Sessione creata!**',view=view)
+        embed=discord.Embed(title="Errore", description="Devi essere in un canale per usare questo comando",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        await ctx.respond(embed=embed)
+    else:
+        sessione = await client.togetherControl.create_link(ctx.author.voice.channel.id, 'youtube')
+        embed=discord.Embed(title="Sessione Creata!", description="Clicca il bottone per entrare",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        tasto=Button(label="Entra nella sessione", style=discord.ButtonStyle.url, emoji="▶",url=sessione)
+        view= View()
+        view.add_item(tasto)
+        await ctx.respond(embed=embed,view=view)
 
 ##invita
-
-@client.slash_command(description="Invita questo fantastico bot al tuo discord!")
+@client.slash_command(description="Invita questo bot al tuo discord!")
 async def invite(ctx):
-    tasto=Button(label="INVITA IL BOT!", style=discord.ButtonStyle.url, emoji="🎫",url=f"https://discord.com/oauth2/authorize?client_id={clientid}&permissions=8&scope=applications.commands%20bot")
-    view= View()
-    view.add_item(tasto)
-    await ctx.respond('**Ecco qua il tasto per invitare il bot!**',view=view)
+    if caninvite == True or "true":
+        embed=discord.Embed(title="Invita il bot", description="Clicca il bottone qua sotto per invitare il bot al tuo discord",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        tasto=Button(label="Invita il bot", style=discord.ButtonStyle.url, emoji="🎫",url=f"https://discord.com/oauth2/authorize?client_id={clientid}&permissions=8&scope=applications.commands%20bot")
+        view= View()
+        view.add_item(tasto)
+        await ctx.respond(embed=embed,view=view)
+    else:
+        embed=discord.Embed(title="Errore", description="Questo comando è disattivato!",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        await ctx.respond(embed=embed)
 
 #Say
-
 @client.slash_command(description="Fai dire al bot una frase a tua scelta!")
 async def say(ctx, *, frase):
     await ctx.respond(frase)
@@ -93,42 +133,41 @@ async def say(ctx, *, frase):
 #kick
 @client.slash_command(description="Espelli un membro dal server")
 @commands.has_permissions(kick_members = True)
-async def kick(ctx,utente : discord.Member,*,motivazione= "Nessuna ragione data"):
-    embed = discord.Embed(title = "**Kick**", description = " ",color = ctx.author.color )
-    embed.add_field(name = "", value = (f":green_square: {utente} è stato kickato dal server!,Motivazione: " +motivazione))
+async def kick(ctx,membro : discord.Member,*,motivazione= "Nessuna ragione data"):
+    embed=discord.Embed(title="Kick 🔨", description=f"**{ctx.author.name}** ha espulso **{membro}**",color = discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+    embed.add_field(name="Motivazione", value=f"{motivazione}", inline=False)
     try:
-        await utente.respond(":confused: Sei stato kickato dal server, Motivo:"+motivazione)
+        await membro.send(":hammer: Sei stato espulso dal server, Motivo:"+motivazione)
     except:
-        await ctx.respond("Il membro ha i dm chiusi,lo Espello senza inviare un messaggio in Dm")
+        print(f"{membro} ha i dm chiusi")
     await ctx.respond(embed = embed)
-    await utente.kick(reason=motivazione)
+    await membro.kick(reason=motivazione)
 
 #ban
 @client.slash_command(description="Banna un membro dal server")
 @commands.has_permissions(ban_members = True)
 async def ban(ctx,membro : discord.Member,*,motivazione= "Nessuna ragione data"):
-    bane = discord.Embed(title = "Ban", description = " ",color = ctx.author.color )
-    bane.add_field(name = "**Informazioni**", value = (f":green_square: {membro} è stato bannato dal server!,Motivazione: " +motivazione))
+    embed=discord.Embed(title="Ban 🔨", description=f"**{ctx.author.name}** ha bannato **{membro}**",color = discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+    embed.add_field(name="Motivazione", value=f"{motivazione}", inline=False)
     try:
-        await membro.respond(":hammer: Sei stato bannato dal server, Motivo:"+motivazione)
+        await membro.send(":hammer: Sei stato bannato dal server, Motivo:"+motivazione)
     except:
-        await ctx.respond("Il membro ha i dm chiusi, proverò comunque a bannarlo")
-    await ctx.respond(embed = bane)
+        print(f"{membro} ha i dm chiusi")
+    await ctx.respond(embed = embed)
     await membro.ban(reason=motivazione)
 
 #unban
 @client.slash_command(description="Sbanna un membro dal server")
 @commands.has_permissions(ban_members=True)
-async def unban(ctx,*,membro):
-    banned_users = await ctx.guild.bans()
-    member_name, member_disc = membro.split('#')
-    for banned_entry in banned_users:
-        user = banned_entry.user
-        if(user.name, user.discriminator)==(member_name,member_disc):
-            await ctx.guild.unban(user)
-            await ctx.respond(member_name + " **è stato sbannato!**")
-            return
-    await ctx.respond(membro+" **non è stato trovato**")
+async def unban(ctx,membro : discord.Member,*,motivazione= "Nessuna ragione data"):
+    try:
+        await ctx.guild.unban(membro,reason=motivazione)     
+        embed=discord.Embed(title="Unban", description=f"**{ctx.author.name}** ha sbannato **{membro}**",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        embed.add_field(name="Motivazione", value=f"{motivazione}", inline=True)
+        await ctx.respond(embed=embed)
+    except:
+        embed=discord.Embed(title="Errore", description=f"**{membro}** non è bannato!",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        await ctx.respond(embed=embed)
 
 #Clear
 
@@ -136,7 +175,7 @@ async def unban(ctx,*,membro):
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, numeromessaggi: int):
     await ctx.channel.purge(limit=numeromessaggi)
-    embed=discord.Embed(title="**Clear**", description=f"Ho ripulito la chat da {numeromessaggi} messaggi!" , color=0x00ff2a)
+    embed=discord.Embed(title="**Clear**", description=f"Ho eliminato {numeromessaggi} messaggi!" , color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
     await ctx.respond(embed=embed)
 
 
@@ -144,7 +183,7 @@ async def clear(ctx, numeromessaggi: int):
 #meme
 @client.slash_command(description="Manda un Meme")
 async def meme(ctx):
-    embed = discord.Embed(title="Ecco un bel meme 🤨", description="")
+    embed = discord.Embed(title="Ecco un meme 🤨", description="",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
 
     async with aiohttp.ClientSession() as cs:
         async with cs.get('https://www.reddit.com/r/memesITA/new.json?sort=hot') as r:
@@ -153,9 +192,9 @@ async def meme(ctx):
             await ctx.respond(embed=embed)
 
 #8ball
-@client.slash_command(aliases=['8ball'], description="Fai una domanda e il bot ti dara una risposta! Magik vero?")
+@client.slash_command(aliases=['8ball'], description="Fai una domanda e il bot ti dara una risposta")
 async def eightball(ctx, *,domanda):
-    responses = ["È certo.",
+    risposte = ["È certo.",
                 "È decisamente così.",
                 "Senza dubbio.",
                 "Sì, sicuramente.",
@@ -175,7 +214,10 @@ async def eightball(ctx, *,domanda):
                 "Le mie fonti dicono di no.",
                 "Prospettive non così buone.",
                 "Molto dubbioso."]
-    await ctx.respond(f':8ball: Domanda: {domanda}\n:8ball: Risposta: {random.choice(responses)}')
+    embed=discord.Embed(title="8ball",color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+    embed.add_field(name="Domanda", value=f"{domanda}", inline=False)
+    embed.add_field(name="Risposta", value=f"{random.choice(risposte)}", inline=False)
+    await ctx.respond(embed=embed)
 
 #Url shortner
 
@@ -184,28 +226,136 @@ async def shortner(ctx, link):
     if link.startswith('http://'):
         shortner=pyshorteners.Shortener()
         short= shortner.tinyurl.short(link)
-        embed=discord.Embed(title="**Url Accorciato!**")
+        embed=discord.Embed(title="**Url Accorciato!**", color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
         embed.add_field(name="Url Originale", value=link, inline=False)
         embed.add_field(name="Url Accorciato", value=short, inline=False)
         await ctx.respond(embed=embed)
     elif link.startswith('https://'):
         shortner=pyshorteners.Shortener()
         short= shortner.tinyurl.short(link)
-        embed=discord.Embed(title="**Url Accorciato!**")
+        embed=discord.Embed(title="**Url Accorciato!**", color=discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
         embed.add_field(name="Url Originale", value=link, inline=False)
         embed.add_field(name="Url Accorciato", value=short, inline=False)
         await ctx.respond(embed=embed)
     else:
-        await ctx.respond(":red_square: **Link non valido!** Ricordati di inserire `http://` o `https://`")
+        embed=discord.Embed(title="Errore", description=":red_square: **Link non valido!** Ricordati di inserire `http://` o `https://`",color= discord.Color.from_rgb(emcolor_r,emcolor_g,emcolor_b))
+        await ctx.send(embed=embed)
 
-@client.event
-async def on_ready():
-    await client.change_presence(activity=discord.Game(name=f"{client.user.name} | V2.0 | /invite"))
-    print('GalbiBot by Galbaninoh')
-    print('------------')
-    print('Bot pronto come')
-    print(client.user.name)
-    print('------------')
-    client.togetherControl = await DiscordTogether(token)
+#IMG commands
+
+@client.slash_command(description="Gay Overlay")
+async def gay(ctx,membro : discord.Member=None):
+    if membro is None:
+        avatarutente=ctx.author.avatar
+        URL = f'https://some-random-api.ml/canvas/gay?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('gay.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('gay.png'))
+            os.remove("gay.png")
+        else:
+            ctx.respond("**Errore API**")
+    else:
+        avatarutente=membro.avatar
+        URL = f'https://some-random-api.ml/canvas/gay?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('gay.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('gay.png'))
+            os.remove("gay.png")
+        else:
+            ctx.respond("**Errore API**")
+
+@client.slash_command(description="Triggered Overlay")
+async def triggered(ctx,membro : discord.Member=None):
+    if membro is None:
+        avatarutente=ctx.author.avatar
+        URL = f'https://some-random-api.ml/canvas/triggered?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('triggered.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('triggered.png'))
+            os.remove("triggered.png")
+        else:
+            ctx.respond("**Errore API**")
+    else:
+        avatarutente=membro.avatar
+        URL = f'https://some-random-api.ml/canvas/triggered?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('triggered.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('triggered.png'))
+            os.remove("triggered.png")
+        else:
+            ctx.respond("**Errore API**")
+
+@client.slash_command(description="Comunism Overlay")
+async def comunism(ctx,membro : discord.Member=None):
+    if membro is None:
+        avatarutente=ctx.author.avatar
+        URL = f'https://some-random-api.ml/canvas/comrade?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('comunism.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('comunism.png'))
+            os.remove("comunism.png")
+        else:
+            ctx.respond("**Errore API**")
+    else:
+        avatarutente=membro.avatar
+        URL = f'https://some-random-api.ml/canvas/comrade?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('comunism.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('comunism.png'))
+            os.remove("comunism.png")
+        else:
+            ctx.respond("**Errore API**")
+
+@client.slash_command(description="Mission Passed Overlay")
+async def passed(ctx,membro : discord.Member=None):
+    if membro is None:
+        avatarutente=ctx.author.avatar
+        URL = f'https://some-random-api.ml/canvas/passed?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('passed.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('passed.png'))
+            os.remove("passed.png")
+        else:
+            ctx.respond("**Errore API**")
+    else:
+        avatarutente=membro.avatar
+        URL = f'https://some-random-api.ml/canvas/passed?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('passed.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('passed.png'))
+            os.remove("passed.png")
+        else:
+            ctx.respond("**Errore API**")
+
+@client.slash_command(description="Wasted Overlay")
+async def wasted(ctx,membro : discord.Member=None):
+    if membro is None:
+        avatarutente=ctx.author.avatar
+        URL = f'https://some-random-api.ml/canvas/wasted?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('wasted.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('wasted.png'))
+            os.remove("wasted.png")
+        else:
+            ctx.respond("**Errore API**")
+    else:
+        avatarutente=membro.avatar
+        URL = f'https://some-random-api.ml/canvas/wasted?avatar={avatarutente}'
+        resp = requests.get(URL)
+        if resp.status_code == 200:
+            open('wasted.png', 'wb').write(resp.content)
+            await ctx.respond(file=discord.File('wasted.png'))
+            os.remove("wasted.png")
+        else:
+            ctx.respond("**Errore API**")
 
 client.run(token)

@@ -1,10 +1,15 @@
 {
-  "name": "GalbiBot",
-  "description": "Un bot leggero basato su py-cord facile da hostare sul cloud",
+  "name": "Galbi",
+  "description": "Un bot di discord facile da hostare sul cloud",
   "scripts": {},
   "env": {
+    "TOKEN": "",
     "CLIENT_ID": "",
-    "TOKEN": ""
+    "EMBED_COLOR_R": "63",
+    "EMBED_COLOR_G": "94",
+    "EMBED_COLOR_B": "251",
+    "STATUS": "dnd",
+    "INVITE": "true"
   },
   "formation": {
     "worker": {
