@@ -4,5 +4,5 @@ Un bot semplice facile da hostare sul cloud
 
 ![help](https://i.imgur.com/DEUFxnk.png)  ![info](https://i.imgur.com/2OWp15S.png)
 
-# [Docs](https://docs.galbaninoh.tech)
+# [Docs](https://docs.galbaninoh.space)
 
